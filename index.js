@@ -4,14 +4,18 @@ var ejs = require('ejs');
 var sqlite3 = require('sqlite3');
 var bodyParser = require('body-parser');
 
+//personal lib deps
+var newPostPOST = require('./lib/newPostPOST.js'); //My written function to handle new, incoming posts
+var newPostGET = require('./lib/newPostGET.js');
+var renderAll = require('./lib/renderAll.js'); //My written function to handle new, incoming posts
+var renderIndex = require('./lib/index.js');
+var renderSingle = require('./lib/renderSingle.js');
+
 //initialize express
 var app = express();
 
-//Set view engine
+//set view engine
 app.set('view engine', 'ejs');
-
-//Let's body parse our document
-app.use(bodyParser.urlencoded({extended: false}));
 
 //dir loading
 app.use(express.static(__dirname + '/views'));
@@ -20,72 +24,31 @@ app.use(express.static(__dirname + '/views'));
 var dbFile = './db/db.sqlite';
 var db = new sqlite3.Database(dbFile);
 
-//Routes
-  //Index
-app.get('/', function (req,res) {
-  res.render('index.ejs');
+//middleware
+  //let's bind database to request so any external references can find it.
+app.use(function (req,res,next) {
+  req.db = db; //bind it to request for all to use
+
+  next(); //this is middleware, so let's keep going!
 });
 
+app.use(bodyParser.urlencoded({extended: false})); //Body parser middleware setting
+
+//Routes
+  //GET Index
+app.get('/', renderIndex);
 
   //Render a single post by ID
-app.all('/post', function (req,res) {
-  var id = req.query.id;
+app.all('/post', renderSingle);
 
-  db.get('SELECT * FROM posts WHERE id = ?', id , function (err, row) {
-    var post = row;
-    //post.creator = author
-    //post.content = body
-    //post.id = ID
-    //post.created = date post made
-    //post.updated = last modification on
-
-    res.render('post', {post: post})
-  });
-});
-
-
- //Render all posts stored in the database
-app.all('/all', function (req,res) {
-	//Arbitrary input sort parameters in
-  var sortKey = req.body.sortKey;
-  var sortDirection = req.body.sortDirection;
-
-  //SQLite3 cannot take a direct input function of 'ORDER BY ?' where ? is input value. Must build the string before passing.
-  var funcIn = 'SELECT * FROM posts ORDER BY ' + sortKey + " " + sortDirection;
-
-
-  //Default case, sort by ID
-  db.all(funcIn, function (err, rows) {
-
-    var posts = rows;
-    res.render('all', {posts: posts})
-  });
-});
+  //Render all posts stored in the database
+app.all('/all', renderAll);
 
   //View page to submit new posts to db
-app.get('/new', function (req,res) {
-	res.render('new', {msg: null});
-});
+app.get('/new', newPostGET);
 
-
-  //accept data and post it to db
-app.post('/new', function (req,res) {
-  var creator = req.body.author;
-  var content = req.body.content;
-  var created = new Date().getTime() / 1000 >> 0; //in ms. convert to s. bit shift to drop float val.
-
-  var dbIn = [creator, created, created, content];
-
-  db.run('INSERT INTO posts (creator,created,updated,content) VALUES(?,?,?,?) ', dbIn, function (err) {
-    console.log(err);
-
-    var msg = "Success!"; //later change to output depending on status
-
-    res.render('new', {msg: msg});
-
-
-  });
-});
+  //Accept new post and pass it to database
+app.post('/new', newPostPOST);
 
 
 //listen on port
