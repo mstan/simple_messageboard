@@ -46,15 +46,16 @@ app.all('/post', function (req,res) {
 
  //Render all posts stored in the database
 app.all('/all', function (req,res) {
+	//Arbitrary input sort parameters in
   var sortKey = req.body.sortKey;
+  var sortDirection = req.body.sortDirection;
+
+  //SQLite3 cannot take a direct input function of 'ORDER BY ?' where ? is input value. Must build the string before passing.
+  var funcIn = 'SELECT * FROM posts ORDER BY ' + sortKey + " " + sortDirection;
 
 
-  //This sorting function does not work.
-  //List can be ordered if passed as ORDER BY x where x is a static name and not a variable, this works. If x is ? and a variable is passed, it will not sort.
-  //Consider building a switch case scenario for each sort-by.
-  db.all('SELECT * FROM posts ORDER BY ?', sortKey, function (err, rows) {
-  	console.log(rows);
-  	console.log(rows[0].id);
+  //Default case, sort by ID
+  db.all(funcIn, function (err, rows) {
 
     var posts = rows;
     res.render('all', {posts: posts})
