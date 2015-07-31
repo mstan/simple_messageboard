@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html>
+<header>
+</header>
+
+<body>
+  <p>Hello World from new.ejs</p>
+
+  <form action="/new" method="post" id="new_post">
+  Author: <input type="text" name="author"> <br>
+  Content: <input type="text" name="content"> <br>
+  <button>Submit!</button>
+  </form>
+
+  <% if (msg != null) { %>
+  	Thing!
+    <%= msg %>
+  <% } %>
+
+
+
+</body>
+
+
+</html>

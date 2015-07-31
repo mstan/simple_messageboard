@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html>
+<header>
+</header>
+
+<body>
+  <p>Hello World from all.ejs</p> <br>
+
+  <form action="/all" method="post" id="sortKeyForm">
+    <select name="sortKey">
+    <option value="id">ID</option>
+    <option value="creator">Creator</option>
+    <option value="created">Created</option>
+    <option value="updated">Updated</option>
+    </select>
+    <button>Submit!</button>    
+  </form>  
+
+
+  <hr>
+
+  <% posts.forEach(function(post) { %>
+  Author, <%= post.creator %> <br>
+  ID:, <%= post.id %> <br>
+  Created at, <%= post.created %> <br>
+  Last Modified at, <%= post.updated %> <br>
+  <br>
+  <%= post.content %>
+  <hr>
+
+  <% }); %>
+
+</body>
+
+
+</html>
