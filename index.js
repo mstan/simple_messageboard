@@ -10,6 +10,7 @@ var newPostGET = require('./lib/newPostGET.js');
 var renderAll = require('./lib/renderAll.js'); //My written function to handle new, incoming posts
 var renderIndex = require('./lib/index.js');
 var renderSingle = require('./lib/renderSingle.js');
+var searchBy = require('./lib/search.js');
 
 //initialize express
 var app = express();
@@ -39,7 +40,7 @@ app.use(bodyParser.urlencoded({extended: false})); //Body parser middleware sett
 app.get('/', renderIndex);
 
   //Render a single post by ID
-app.all('/post', renderSingle);
+app.get('/post', renderSingle);
 
   //Render all posts stored in the database
 app.all('/all', renderAll);
@@ -49,6 +50,14 @@ app.get('/new', newPostGET);
 
   //Accept new post and pass it to database
 app.post('/new', newPostPOST);
+
+app.get('/search', function (req,res) {
+	res.render('search', {posts: null});
+});
+
+app.post('/search', searchBy);
+
+
 
 
 //listen on port

@@ -4,26 +4,25 @@
 </header>
 
 <body>
-  <p>Hello World from all.ejs</p> <br>
+  <p>Hello World from new.ejs</p>
 
-  <form action="/all" method="post" id="sortKeyForm">
+  <form action="/search" method="post" id="sortKeyForm">
     <select name="sortKey">
     <option value="id">ID</option>
     <option value="creator">Creator</option>
     <option value="created">Created</option>
     <option value="updated">Updated</option>
-    <option value="subject">Subject</option>
+    <option value="subject">subject</option>
     </select>
-    <select name="sortDirection">
-    <option value="ASC">ASC</option>
-    <option value="DESC">DESC</option>
 
-    </select>    
-    <button>Submit!</button>    
-  </form>  
+    <input type="text" name="query">
+    <button>Search!</button>
 
+  </form>
 
   <hr>
+
+  <% if (posts != null) { %>
 
   <% posts.forEach(function(post) { %>
   Author, <%= post.creator %> <br>
@@ -34,7 +33,11 @@
   <%= post.content %>
   <hr>
 
-  <% }); %>
+  <% }); %>  
+
+  <% } %>
+
+
 
 </body>
 
